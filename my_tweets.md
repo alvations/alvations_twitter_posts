@@ -1,37 +1,5 @@
 # My Daily X Archive (Latest First)
 
-### 2025-12-04 13:52
-@magikarp_tokens #minorityreport precog abilities 😆
-
-#llms are just frequentist HMMs
-
-*[Link](https://x.com/alvations/status/1996578296314597763)*
-
----
-
-### 2025-12-04 02:58
-@glean @suno @MistralAI @huggingface @crunchbase Similarly from O-model https://t.co/QlLimAMK4J
-
-*[Link](https://x.com/alvations/status/1996413852674900061)*
-
----
-
-### 2025-12-04 02:57
-@glean @suno @MistralAI @huggingface Look how #llm can make info selling business like @crunchbase obsolete soon... 
-
-From G-model: https://t.co/svPiQ9Egvx
-
-*[Link](https://x.com/alvations/status/1996413543168823643)*
-
----
-
-### 2025-12-04 02:48
-@glean @suno @MistralAI @huggingface Hint: One of their early investor is an @NBA legend =)
-
-*[Link](https://x.com/alvations/status/1996411334452461797)*
-
----
-
 ### 2025-12-30 06:00
 @github @GoogleAIStudio It works!! https://t.co/jBKQmDwQkN
 
@@ -123,4 +91,35 @@ I wonder... I'm assuming that series pause means their cashflow is good and burn
 
 ---
 
+### 2025-12-04 13:52
+@magikarp_tokens #minorityreport precog abilities 😆
+
+#llms are just frequentist HMMs
+
+*[Link](https://x.com/alvations/status/1996578296314597763)*
+
+---
+
+### 2025-12-04 02:58
+@glean @suno @MistralAI @huggingface @crunchbase Similarly from O-model https://t.co/QlLimAMK4J
+
+*[Link](https://x.com/alvations/status/1996413852674900061)*
+
+---
+
+### 2025-12-04 02:57
+@glean @suno @MistralAI @huggingface Look how #llm can make info selling business like @crunchbase obsolete soon... 
+
+From G-model: https://t.co/svPiQ9Egvx
+
+*[Link](https://x.com/alvations/status/1996413543168823643)*
+
+---
+
+### 2025-12-04 02:48
+@glean @suno @MistralAI @huggingface Hint: One of their early investor is an @NBA legend =)
+
+*[Link](https://x.com/alvations/status/1996411334452461797)*
+
+---
 
