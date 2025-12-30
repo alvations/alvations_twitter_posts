@@ -58,7 +58,7 @@ def get_tweets_from_google():
     
     try:
         # Search query to find specific posts
-        query = f"site:x.com/{USERNAME}/status"
+        query = "alvations+twitter" # f"site:x.com/{USERNAME}/status"
         driver.get(f"https://www.google.com/search?q={query}")
         time.sleep(5) # Wait for results
 
