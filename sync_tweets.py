@@ -1,6 +1,7 @@
 import tweepy
 import os
 import datetime
+import sys
 
 # Configuration
 """
@@ -35,12 +36,18 @@ def get_tweets():
         
         return response.data
 
+    except tweepy.errors.Forbidden as e:
+        print(f"❌ Error 403: Forbidden. Your X API tier (Free) does not allow reading tweets.")
+        print("Note: The Free tier only allows POSTING. You need the Basic tier ($100/mo) to backup posts.")
+        sys.exit(1) 
+
     except tweepy.errors.TooManyRequests:
-        print("Rate limit hit. Waiting 15 mins...")
-        return []
+        print("❌ Error 429: Rate limit hit.")
+        sys.exit(1)
+
     except Exception as e:
-        print(f"Error: {e}")
-        return []
+        print(f"❌ Unexpected Error: {e}")
+        sys.exit(1)
 
 def update_markdown(tweets):
     if not tweets:
