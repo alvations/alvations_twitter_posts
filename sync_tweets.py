@@ -15,45 +15,72 @@ BEARER_TOKEN = os.getenv('TWITTER_BEARER_TOKEN')
 USER_ID = "1511382325715742725"  # https://x.com/alvations
 FILE_NAME = "my_tweets.md"
 
+
 def get_tweets():
     client = tweepy.Client(bearer_token=BEARER_TOKEN)
     
-    # Fetching the last 10 tweets (API Basic tier allows this)
-    # We use user_auth=False for Bearer Token access
-    response = client.get_users_tweets(
-        id=USER_ID, 
-        max_results=10, 
-        tweet_fields=['created_at', 'public_metrics']
-    )
-    
-    if not response.data:
-        print("No new tweets found.")
+    try:
+        # max_results: 5-100. Let's use 20 to ensure we catch everything.
+        # tweet_fields: includes 'referenced_tweets' to detect reposts/replies
+        response = client.get_users_tweets(
+            id=USER_ID, 
+            max_results=20, 
+            tweet_fields=['created_at', 'referenced_tweets', 'conversation_id'],
+            expansions=['referenced_tweets.id']
+        )
+        
+        if not response.data:
+            print("No tweets, reposts, or replies found in the last 7 days.")
+            return []
+        
+        return response.data
+
+    except tweepy.errors.TooManyRequests:
+        print("Rate limit hit. Waiting 15 mins...")
         return []
-    
-    return response.data
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
 
 def update_markdown(tweets):
     if not tweets:
         return
 
-    # Create file if it doesn't exist
     if not os.path.exists(FILE_NAME):
         with open(FILE_NAME, "w", encoding="utf-8") as f:
             f.write("# My X (Twitter) Archive\n\n")
 
-    # Read existing IDs to avoid duplicates
     with open(FILE_NAME, "r", encoding="utf-8") as f:
         content = f.read()
 
-    with open(FILE_NAME, "a", encoding="utf-8") as f:
-        for tweet in reversed(tweets):
-            if str(tweet.id) not in content:
-                date = tweet.created_at.strftime("%Y-%m-%d %H:%M")
-                f.write(f"### {date}\n")
-                f.write(f"{tweet.text}\n\n")
-                f.write(f"*[Link to tweet](https://x.com/user/status/{tweet.id})*\n")
-                f.write("---\n\n")
-                print(f"Added tweet {tweet.id}")
+    new_entries = []
+    
+    # Process tweets in reverse (oldest to newest) to maintain chronological order
+    for tweet in reversed(tweets):
+        if str(tweet.id) not in content:
+            date = tweet.created_at.strftime("%Y-%m-%d %H:%M")
+            
+            # Identify the type of tweet
+            prefix = "📝 **Post**" # Default
+            if tweet.referenced_tweets:
+                ref_type = tweet.referenced_tweets[0].type
+                if ref_type == "retweeted":
+                    prefix = "🔁 **Repost**"
+                elif ref_type == "replied_to":
+                    prefix = "💬 **Reply**"
+                elif ref_type == "quoted":
+                    prefix = "👁️ **Quote Tweet**"
+
+            entry = f"### {date}\n{prefix}\n\n{tweet.text}\n\n"
+            entry += f"*[Link to tweet](https://x.com/i/status/{tweet.id})*\n\n---\n\n"
+            new_entries.append(entry)
+            print(f"Adding {prefix} {tweet.id}")
+
+    if new_entries:
+        with open(FILE_NAME, "a", encoding="utf-8") as f:
+            f.write("".join(new_entries))
+    else:
+        print("No new unique content to add.")
 
 if __name__ == "__main__":
     new_tweets = get_tweets()
