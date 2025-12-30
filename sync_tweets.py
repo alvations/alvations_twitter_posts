@@ -1,9 +1,9 @@
-import datetime
 import os
 import re
 import sys
 import time
 import tweepy
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -40,13 +40,19 @@ def get_tweets_tweepy():
         )
         if response.data:
             print(f"✅ API found {len(response.data)} items.")
-            return [{"id": str(t.id), "text": t.text, "date": t.created_at.strftime("%Y-%m-%d %H:%M"), "link": f"https://x.com/i/status/{t.id}"} for t in response.data]
+            return [{
+                "id": str(t.id), 
+                "text": t.text, 
+                "timestamp": t.created_at.timestamp(),
+                "date": t.created_at.strftime("%Y-%m-%d %H:%M"), 
+                "link": f"https://x.com/{USERNAME}/status/{t.id}"
+            } for t in response.data]
     except Exception as e:
         print(f"⚠️ API Error: {e}")
     return []
 
 def get_tweets_from_google():
-    print(f"🌐 Scraping Google Search for site:x.com/{USERNAME}...")
+    print(f"🔍 Scraping Google Search for '{USERNAME} twitter'...")
     chrome_options = Options()
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
@@ -57,38 +63,45 @@ def get_tweets_from_google():
     google_data = []
     
     try:
-        # Search query to find specific posts
-        query = "alvations+twitter" # f"site:x.com/{USERNAME}/status"
-        driver.get(f"https://www.google.com/search?q={query}")
-        time.sleep(5) # Wait for results
+        # Using the exact query you requested
+        driver.get(f"https://www.google.com/search?q={USERNAME}+twitter")
+        time.sleep(5) 
 
-        # Find all search result blocks
-        search_results = driver.find_elements(By.CSS_SELECTOR, "div.g")
+        # Based on your HTML, cards are in 'div' with role='listitem'
+        # and contain links to x.com/alvations/status/...
+        cards = driver.find_elements(By.XPATH, '//div[@role="listitem"]')
         
-        for res in search_results:
+        for card in cards:
             try:
-                # Extract URL to get Tweet ID
-                link_element = res.find_element(By.TAG_NAME, "a")
-                url = link_element.get_attribute("href")
-                
-                # Extract Snippet Text
-                # Google usually stores snippets in a div with class 'VwiC3b' or similar
-                snippet = res.text.split('\n')[-1] # Simple fallback
-                
-                # Use regex to find status ID
-                match = re.search(r'status/(\d+)', url)
-                if match:
-                    tweet_id = match.group(1)
+                # 1. Extract the Link and ID
+                link_element = card.find_element(By.XPATH, './/a[contains(@href, "status/")]')
+                full_link = link_element.get_attribute("href")
+                # Clean the link (remove google tracking params)
+                tweet_link = full_link.split('?')[0]
+                tweet_id = tweet_link.split('/')[-1]
+
+                # 2. Extract the Text (Class 'xcQxib' from your snippet)
+                text_element = card.find_element(By.CLASS_NAME, 'xcQxib')
+                text = text_element.text
+
+                # 3. Extract the Timestamp (Attribute 'data-ts' from your snippet)
+                # This is the most accurate way to sort!
+                ts_element = card.find_element(By.XPATH, './/span[@data-ts]')
+                unix_ts = int(ts_element.get_attribute("data-ts"))
+                readable_date = datetime.fromtimestamp(unix_ts).strftime("%Y-%m-%d %H:%M")
+
+                if tweet_id and text:
                     google_data.append({
                         "id": tweet_id,
-                        "text": f"[Google Snippet]: {snippet}",
-                        "date": f"{time.strftime('%Y-%m-%d')} (Indexed)",
-                        "link": f"https://x.com/{USERNAME}/status/{tweet_id}"
+                        "text": text,
+                        "timestamp": unix_ts,
+                        "date": readable_date,
+                        "link": tweet_link
                     })
-            except:
+            except Exception:
                 continue
         
-        print(f"✅ Google found {len(google_data)} indexed links.")
+        print(f"✅ Google Scraper found {len(google_data)} items.")
     except Exception as e:
         print(f"⚠️ Google Scraping Error: {e}")
     finally:
@@ -99,8 +112,8 @@ def update_markdown(combined_data):
     if not combined_data:
         return False
     
-    # Sort Newest ID first
-    combined_data.sort(key=lambda x: int(x['id']), reverse=True)
+    # Sort by Timestamp (Newest first)
+    combined_data.sort(key=lambda x: x['timestamp'], reverse=True)
     
     existing_content = ""
     if os.path.exists(FILE_NAME):
@@ -110,6 +123,7 @@ def update_markdown(combined_data):
     new_entries_text = ""
     new_count = 0
     for tweet in combined_data:
+        # Check if the specific Tweet ID is already in the file
         if tweet['id'] not in existing_content:
             entry = f"### {tweet['date']}\n{tweet['text']}\n\n"
             entry += f"*[Link]({tweet['link']})*\n\n---\n\n"
@@ -120,23 +134,24 @@ def update_markdown(combined_data):
         print("😴 No new items found to add.")
         return True
 
+    # Overwrite the file: Header + New Content + Old Content (minus its original header)
     clean_old = existing_content.replace(HEADER, "")
     with open(FILE_NAME, "w", encoding="utf-8") as f:
         f.write(HEADER + new_entries_text + clean_old)
     
-    print(f"🚀 Success: Added {new_count} items to top of file.")
+    print(f"🚀 Success: Added {new_count} new items to top of {FILE_NAME}.")
     return True
 
 if __name__ == "__main__":
     api_results = get_tweets_tweepy()
     google_results = get_tweets_from_google()
     
-    # Merge and Deduplicate
+    # Merge and Deduplicate by Tweet ID
     merged = {t['id']: t for t in (google_results + api_results)}
     final_list = list(merged.values())
     
     if not final_list:
-        print("❌ All backup methods failed. No data found.")
+        print("❌ All fetch methods failed.")
         sys.exit(1)
         
     update_markdown(final_list)
