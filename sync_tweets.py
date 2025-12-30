@@ -6,6 +6,7 @@ import tweepy
 import feedparser
 import requests
 from datetime import datetime
+from bs4 import BeautifulSoup
 from ntscraper import Nitter
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
@@ -35,15 +36,7 @@ def get_uc_driver():
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument("--window-size=1920,1080")
     driver = uc.Chrome(options=options)
-    # Apply Stealth
-    stealth(driver,
-        languages=["en-US", "en"],
-        vendor="Google Inc.",
-        platform="MacIntel",
-        webgl_vendor="Intel Inc.",
-        renderer="Intel Iris OpenGL Engine",
-        fix_hairline=True,
-    )
+    stealth(driver, languages=["en-US", "en"], vendor="Google Inc.", platform="MacIntel", webgl_vendor="Intel Inc.", renderer="Intel Iris OpenGL Engine", fix_hairline=True)
     return driver
 
 def get_tweets_tweepy():
@@ -59,25 +52,55 @@ def get_tweets_tweepy():
     return []
 
 def get_tweets_wayback():
-    print("🏛️ Method 2: Wayback Machine CDX API...")
+    print("🏛️ Method 2: Wayback Machine Deep Scrape...")
     wayback_data = []
     try:
-        # Search for archived status links from the last year
-        url = f"http://web.archive.org/cdx/search/cdx?url=x.com/{USERNAME}/status/&matchType=prefix&output=json&limit=10"
-        response = requests.get(url, timeout=10)
-        if response.status_code == 200:
-            results = response.json()
-            for r in results[1:]: # Skip header row
-                orig_url = r[2]
-                match = re.search(r'status/(\d+)', orig_url)
-                if match:
-                    tid = match.group(1)
+        # 1. Get the list of snapshots for statuses
+        cdx_url = f"http://web.archive.org/cdx/search/cdx?url=x.com/{USERNAME}/status/&matchType=prefix&output=json&limit=5&filter=statuscode:200"
+        response = requests.get(cdx_url, timeout=15)
+        if response.status_code != 200: return []
+        
+        results = response.json()
+        # Each 'r' is [timestamp, original_url, etc]
+        for r in results[1:]: 
+            ts_archive = r[1] # e.g. 20251229123000
+            orig_url = r[2]
+            match = re.search(r'status/(\d+)', orig_url)
+            if not match: continue
+            tid = match.group(1)
+            
+            # 2. Fetch the actual archived page to get content
+            memento_url = f"https://web.archive.org/web/{ts_archive}/{orig_url}"
+            try:
+                page = requests.get(memento_url, timeout=10)
+                soup = BeautifulSoup(page.text, 'lxml')
+                
+                # Try finding text in different Twitter UI versions
+                text = ""
+                # Newer X layout
+                text_el = soup.find("div", {"data-testid": "tweetText"})
+                if text_el: 
+                    text = text_el.get_text()
+                else:
+                    # Older Twitter layout
+                    text_el = soup.find("p", class_="tweet-text") or soup.find("div", class_="tweet-text")
+                    if text_el: text = text_el.get_text()
+
+                # Try finding the original date
+                date_str = "Archived Date"
+                time_el = soup.find("time")
+                if time_el and time_el.has_attr('datetime'):
+                    date_str = time_el['datetime'].replace('T', ' ').split('.')[0]
+                
+                if text:
                     wayback_data.append({
-                        "id": tid, "text": "[Recovered from Internet Archive]", "ts": time.time(),
-                        "date": "Wayback Snapshot", "link": f"https://x.com/{USERNAME}/status/{tid}"
+                        "id": tid, "text": f"[Wayback]: {text}", "ts": time.time(),
+                        "date": date_str, "link": f"https://x.com/{USERNAME}/status/{tid}"
                     })
-        print(f"✅ Wayback found {len(wayback_data)} items.")
-    except: pass
+            except: continue
+        
+        print(f"✅ Wayback recovered {len(wayback_data)} full posts.")
+    except Exception as e: print(f"⚠️ Wayback Error: {e}")
     return wayback_data
 
 def get_tweets_bing():
@@ -95,7 +118,7 @@ def get_tweets_bing():
                 tid = match.group(1)
                 bing_data.append({
                     "id": tid, "text": "[Link found via Bing Index]", "ts": time.time(),
-                    "date": "Indexed by Bing", "link": f"https://x.com/{USERNAME}/status/{tid}"
+                    "date": f"{datetime.now().strftime('%Y-%m-%d')} (Bing)", "link": f"https://x.com/{USERNAME}/status/{tid}"
                 })
     except: pass
     finally: driver.quit()
@@ -110,6 +133,7 @@ def get_tweets_ntscraper():
         for t in results['tweets']:
             tid = t['link'].split('/')[-1]
             data.append({"id": tid, "text": t['text'], "ts": time.time(), "date": t['date'], "link": t['link']})
+        print(f"✅ NTScraper found {len(data)} items.")
         return data
     except: return []
 
@@ -120,7 +144,6 @@ def get_tweets_from_google():
     try:
         driver.get(f"https://www.google.com/search?q={USERNAME}+twitter&hl=en")
         time.sleep(5)
-        # Cookie Buster
         try:
             btns = driver.find_elements(By.XPATH, "//button[contains(., 'Accept') or contains(., 'Agree')]")
             if btns: btns[0].click(); time.sleep(2)
@@ -139,6 +162,7 @@ def get_tweets_from_google():
                     "link": f"https://x.com/{USERNAME}/status/{tid}"
                 })
             except: continue
+        print(f"✅ Google found {len(google_data)} items.")
     except: pass
     finally: driver.quit()
     return google_data
@@ -152,14 +176,17 @@ def get_tweets_rss():
                 data = []
                 for entry in feed.entries:
                     tid = re.search(r'status/(\d+)', entry.link).group(1)
-                    data.append({"id": tid, "text": entry.title, "ts": time.mktime(entry.published_parsed), "date": "RSS Feed", "link": f"https://x.com/{USERNAME}/status/{tid}"})
+                    data.append({"id": tid, "text": entry.title, "ts": time.mktime(entry.published_parsed), "date": datetime.fromtimestamp(time.mktime(entry.published_parsed)).strftime("%Y-%m-%d %H:%M"), "link": f"https://x.com/{USERNAME}/status/{tid}"})
+                print(f"✅ RSS found {len(data)} items.")
                 return data
         except: continue
     return []
 
 def update_markdown(all_tweets):
     if not all_tweets: return
+    # Sort by Snowflake ID (Numerical)
     all_tweets.sort(key=lambda x: int(x['id']), reverse=True)
+    
     existing_content = ""
     if os.path.exists(FILE_NAME):
         with open(FILE_NAME, "r", encoding="utf-8") as f: existing_content = f.read()
@@ -176,12 +203,18 @@ def update_markdown(all_tweets):
         with open(FILE_NAME, "w", encoding="utf-8") as f:
             f.write(HEADER + new_entries + clean_old)
         print(f"🚀 SUCCESS: Added {new_count} new items to the top.")
+    else:
+        print("😴 No new unique items found.")
 
 if __name__ == "__main__":
     combined = get_tweets_tweepy() + get_tweets_wayback() + get_tweets_bing() + \
                get_tweets_ntscraper() + get_tweets_from_google() + get_tweets_rss()
-    unique = {t['id']: t for t in combined}
+    
+    # Deduplicate by ID
+    unique = {t['id']: t for t in combined if t['id']}
+    
     if not unique:
-        print("❌ All methods failed.")
+        print("❌ All methods failed to retrieve data.")
         sys.exit(1)
+        
     update_markdown(list(unique.values()))
