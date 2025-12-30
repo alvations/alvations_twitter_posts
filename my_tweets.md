@@ -1,1 +1,87 @@
+# My Daily X Archive (Latest First)
+
+### 2025-12-30 05:32
+@github Lol, #LLMs knows capitalism well.. @GoogleAIStudio =) https://t.co/9iOtNKI0hF
+
+*[Link](https://x.com/alvations/status/2005874719107538981)*
+
+---
+
+### 2025-12-30 04:39
+Non #nlproc post: Testing for https://t.co/pBXWBjQZ6X
+
+@github Actions + #tweetpy = #engineersolutions to #xdotcom bug...
+
+#python devs are awesome folks and yes, I "gemini-ed" this up...
+
+*[Link](https://x.com/alvations/status/2005861221677797771)*
+
+---
+
+### 2025-12-29 16:07
+Everyone! Since I've lost access to twitter's DM feature, please ping me through email/phone. https://t.co/FnKHgu7ndD
+
+*[Link](https://x.com/alvations/status/2005671943975109080)*
+
+---
+
+### 2025-12-29 16:03
+@premium  I cannot access my DM with this error and my account is showing I haven’t posted. Help please!! https://t.co/PeUWpWVet7
+
+*[Link](https://x.com/alvations/status/2005670929247203506)*
+
+---
+
+### 2025-12-11 13:27
+@yuvalmarton “How many researchers do we need to connect the laptop to the projector?” is a common question at @NeurIPSConf @iclr_conf @aclmeeting
+
+*[Link](https://x.com/alvations/status/1999108663424819220)*
+
+---
+
+### 2025-12-10 13:42
+Honestly curious, not being rhetorical here.
+
+*[Link](https://x.com/alvations/status/1998750103729795462)*
+
+---
+
+### 2025-12-10 13:42
+We’ve been here before with Alexa skills…
+
+2025: https://t.co/KTKlb74Cei
+
+2015: https://t.co/hajGu3ggFO
+
+What do you think makes it different 10 years later? #nlproc #llm
+
+*[Link](https://x.com/alvations/status/1998750100982525964)*
+
+---
+
+### 2025-12-05 13:12
+@glean @suno @MistralAI @huggingface @argilla_io @Gradio @pollenrobotics Sometimes I wonder whether people even care about these non #nlproc non-work posts, lol... 
+
+At least, my future self can look back at my thoughts =)
+
+*[Link](https://x.com/alvations/status/1996930761287442868)*
+
+---
+
+### 2025-12-05 13:11
+@glean @suno @MistralAI @huggingface @argilla_io @Gradio @pollenrobotics BTW, for those who doesn't know @glean is at a sort of odd place competing with many other similar alternatives. They raised 150M for 7.2B valuation for series F recently. So that assumes that net burn rate is higher than @huggingface to raise capital for growth.
+
+*[Link](https://x.com/alvations/status/1996930511051411956)*
+
+---
+
+### 2025-12-05 13:07
+@glean @suno @MistralAI @huggingface FYI, for those who don't know the answer... It's @huggingface and it's kinda awesome that their acquisition of @argilla_io @Gradio @pollenrobotics scales and integrates well. 
+
+I wonder... I'm assuming that series pause means their cashflow is good and burn rate is acceptable.
+
+*[Link](https://x.com/alvations/status/1996929313237606525)*
+
+---
+
 
