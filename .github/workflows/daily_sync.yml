@@ -31,8 +31,15 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add my_tweets.md
-          git commit -m "Automated update: $(date)" || exit 0
-          git push
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Check if the file exists before trying to add it
+          if [ -f my_tweets.md ]; then
+            git add my_tweets.md
+            # Only commit if there are actually changes to prevent "nothing to commit" errors
+            git diff-index --quiet HEAD || git commit -m "Automated update: $(date)"
+            git push
+          else
+            echo "File my_tweets.md does not exist. Skipping commit."
+          fi
