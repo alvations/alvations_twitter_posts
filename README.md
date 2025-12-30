@@ -2,7 +2,7 @@
 
 This is a daily sync of my posts from https://x.com/alvations cos this is happening...
 
-<img width="946" height="2048" alt="image" src="https://github.com/user-attachments/assets/76908db2-dab9-4559-8a39-b9596c92884c" />
+<img width="473" height="1024" alt="image" src="https://github.com/user-attachments/assets/76908db2-dab9-4559-8a39-b9596c92884c" />
 
 
 # Alternatively,
