@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install tweepy selenium webdriver-manager selenium-stealth
+          pip install tweepy selenium webdriver-manager selenium-stealth feedparser
 
       - name: Run sync script
         env:
