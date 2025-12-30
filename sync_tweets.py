@@ -3,8 +3,16 @@ import os
 import datetime
 
 # Configuration
+"""
+You can find your ID hidden in the code of your own profile page.
+1. Open your profile on X (e.g., x.com/yourusername) in Chrome or Firefox.
+2. Right-click anywhere on the page and select View Page Source.[10]
+3. Press Ctrl + F (or Cmd + F on Mac) to search. Search for: rest_id
+   You will see something like "rest_id":"123456789". That number is your User ID.
+"""
+
 BEARER_TOKEN = os.getenv('TWITTER_BEARER_TOKEN')
-USER_ID = "YOUR_NUMERIC_USER_ID"  # Use a tool like 'tweeterid.com' to find yours
+USER_ID = "1511382325715742725"  # https://x.com/alvations
 FILE_NAME = "my_tweets.md"
 
 def get_tweets():
