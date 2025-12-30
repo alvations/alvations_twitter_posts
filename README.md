@@ -16,4 +16,4 @@ you can also somehow view my tweets if you google them
 
 It's GPL, see [LICENSE.md](https://github.com/alvations/alvations_twitter_posts/blob/main/LICENSE)
 
-Everything you build with this GPL data MUST be copyleft and be opened with same license!
+**Everything you build with this GPL data MUST be copyleft and be opened with same license!**
