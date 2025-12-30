@@ -11,7 +11,6 @@ you can also somehow view my tweets if you google them
 
 - https://www.google.com/search?q=alvations+twitter
 - https://www.google.com/search?q=https%3A%2F%2Fx.com%2Falvations
-- <!-- (https://www.sotwe.com/alvations) -->
 
 
 # Copyrights
