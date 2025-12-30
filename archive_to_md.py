@@ -1,49 +1,99 @@
 import json
 import os
+import re
 
-# Configuration
+# Configuration - Must match sync_tweets.py
 INPUT_FILE = 'tweets.js'
 OUTPUT_FILE = 'my_tweets.md'
+USERNAME = "alvations"
+HEADER = "# My Daily X Archive (Latest First)\n\n"
 
-def parse_archive():
-    if not os.path.exists(INPUT_FILE):
-        print(f"Error: {INPUT_FILE} not found. Place this script in the 'data' folder of your archive.")
-        return
-
-    print("Reading archive... this may take a moment.")
+def parse_existing_markdown():
+    """Reads the existing .md file so we can merge historical data into it."""
+    tweets = []
+    if not os.path.exists(OUTPUT_FILE):
+        return tweets
     
-    with open(INPUT_FILE, 'r', encoding='utf-8') as f:
-        # Remove the JavaScript variable assignment at the start of the file
+    print(f"Reading existing {OUTPUT_FILE} for merging...")
+    with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
         content = f.read()
-        json_str = content.replace('window.YTD.tweet.part0 = ', '')
-        
-        try:
-            data = json.loads(json_str)
-        except json.JSONDecodeError:
-            # Some newer archives might have different variable names
-            print("Standard parsing failed, attempting alternate cleaning...")
-            json_str = content[content.find('=') + 1:].strip()
-            data = json.loads(json_str)
-
-    # Sort tweets by date (oldest to newest or newest to oldest)
-    # The archive usually comes in reverse chronological order
-    tweets = [t['tweet'] for t in data]
     
-    with open(OUTPUT_FILE, 'w', encoding='utf-8') as md:
-        md.write("# My X (Twitter) Archive\n\n")
-        
-        for tweet in tweets:
-            text = tweet.get('full_text', '')
-            date = tweet.get('created_at', '')
-            tweet_id = tweet.get('id_str', '')
+    sections = content.split("---\n\n")
+    for section in sections:
+        try:
+            date_match = re.search(r'### (.*?)\n', section)
+            # Match the link format used in sync_tweets.py
+            link_match = re.search(r'\*\[Link\]\((.*?status/(\d+).*?)\)\*', section)
             
-            # Format the output to match your daily_sync.py format
-            md.write(f"### {date}\n")
-            md.write(f"{text}\n\n")
-            md.write(f"*[Link to tweet](https://x.com/i/status/{tweet_id})*\n")
+            if date_match and link_match:
+                text_start = date_match.end()
+                text_end = link_match.start()
+                text = section[text_start:text_end].strip()
+                
+                tweets.append({
+                    "id": link_match.group(2),
+                    "text": text,
+                    "date": date_match.group(1),
+                    "link": link_match.group(1)
+                })
+        except:
+            continue
+    return tweets
+
+def parse_twitter_js_archive():
+    """Parses the tweets.js file from the X/Twitter export."""
+    if not os.path.exists(INPUT_FILE):
+        print(f"Error: {INPUT_FILE} not found.")
+        return []
+
+    print("Processing tweets.js archive...")
+    with open(INPUT_FILE, 'r', encoding='utf-8') as f:
+        content = f.read()
+        # Handle the JS variable prefix
+        json_str = content[content.find('=') + 1:].strip()
+        if json_str.endswith(';'):
+            json_str = json_str[:-1]
+        
+        data = json.loads(json_str)
+
+    archive_tweets = []
+    for item in data:
+        tweet = item.get('tweet', item) # Handle different archive versions
+        tid = tweet.get('id_str')
+        archive_tweets.append({
+            "id": tid,
+            "text": tweet.get('full_text', ''),
+            "date": tweet.get('created_at', ''),
+            "link": f"https://x.com/{USERNAME}/status/{tid}"
+        })
+    return archive_tweets
+
+def main():
+    # 1. Get historical data from JS file
+    archive_data = parse_twitter_js_archive()
+    
+    # 2. Get existing data from current Markdown file (if any)
+    existing_data = parse_existing_markdown()
+    
+    # 3. Merge and Deduplicate by ID
+    # This ensures that if a tweet is in both the archive and the .md file, we only keep one.
+    master_dict = {t['id']: t for t in (existing_data + archive_data) if t.get('id')}
+    
+    # 4. Global Chronological Sort (Latest First)
+    # Snowflake IDs are chronological; sorting numerically descending puts newest at top.
+    all_sorted = sorted(master_dict.values(), key=lambda x: int(x['id']), reverse=True)
+    
+    # 5. Write out the formatted file
+    print(f"Writing {len(all_sorted)} tweets to {OUTPUT_FILE} in latest-first order...")
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as md:
+        md.write(HEADER)
+        for t in all_sorted:
+            md.write(f"### {t['date']}\n")
+            md.write(f"{t['text']}\n\n")
+            md.write(f"*[Link]({t['link']})*\n")
             md.write("---\n\n")
 
-    print(f"Success! {len(tweets)} tweets saved to {OUTPUT_FILE}")
+    print("Success! Archive and live posts are now merged and sorted.")
 
 if __name__ == "__main__":
-    parse_archive()
+    main()
