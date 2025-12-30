@@ -25,12 +25,11 @@ USERNAME = "alvations" # No need for numeric ID anymore
 FILE_NAME = "my_tweets.md"
 HEADER = "# My Daily X Archive (Latest First)\n\n"
 
+
 def get_tweets_tweepy():
     print("🛰️ Attempting Tweepy API fetch...")
     if not BEARER_TOKEN:
-        print("⚠️ No Bearer Token found in Secrets.")
         return []
-    
     client = tweepy.Client(bearer_token=BEARER_TOKEN)
     try:
         user = client.get_user(username=USERNAME)
@@ -40,28 +39,42 @@ def get_tweets_tweepy():
             tweet_fields=['created_at', 'text']
         )
         if response.data:
-            print(f"✅ API found {len(response.data)} posts.")
             return [{"id": str(t.id), "text": t.text, "date": t.created_at.strftime("%Y-%m-%d %H:%M"), "link": f"https://x.com/i/status/{t.id}"} for t in response.data]
     except Exception as e:
-        print(f"⚠️ Tweepy API Error: {e}")
+        print(f"⚠️ API Error: {e}")
     return []
 
 def get_tweets_selenium():
-    print(f"🌐 Attempting Selenium Scraping for @{USERNAME}...")
+    print(f"🌐 Attempting Stealth Selenium Scraping...")
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless=new") # Newer headless mode is harder to detect
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
     
+    # Hide the fact that we are a bot
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    
+    # Use the Search URL instead of Profile URL (sometimes bypasses login wall)
+    search_url = f"https://x.com/search?q=(from%3A{USERNAME})&f=live"
     scraped_data = []
     
     try:
-        driver.get(f"https://x.com/{USERNAME}")
-        time.sleep(8) # Wait for dynamic content
+        driver.get(search_url)
+        time.sleep(10) # Give it plenty of time to load
+        
         articles = driver.find_elements(By.TAG_NAME, "article")
+        
+        if not articles:
+            print("❌ No articles found. X is likely showing a Login Wall.")
+            # DEBUG: Print the page title to see what the bot sees
+            print(f"DEBUG: Page Title is '{driver.title}'")
+            if "Log in" in driver.title or "X / ?" in driver.title:
+                print("🚨 CONFIRMED: X is blocking this guest session with a Login Wall.")
         
         for article in articles:
             try:
@@ -70,7 +83,7 @@ def get_tweets_selenium():
                 tweet_link = ""
                 for l in links:
                     href = l.get_attribute("href")
-                    if href and "/status/" in href and USERNAME in href:
+                    if href and "/status/" in href:
                         tweet_link = href.split('?')[0]
                         break
                 
@@ -84,64 +97,51 @@ def get_tweets_selenium():
                     })
             except:
                 continue
-        print(f"✅ Selenium found {len(scraped_data)} posts.")
     except Exception as e:
-        print(f"⚠️ Selenium Scraper Error: {e}")
+        print(f"⚠️ Selenium Error: {e}")
     finally:
         driver.quit()
     return scraped_data
 
 def update_markdown(combined_data):
     if not combined_data:
-        print("😴 No data to process.")
         return False
-
-    # 1. Sort combined data by ID (Snowflake IDs sort chronologically) 
-    # Reverse=True puts the newest IDs at the start of our list
+    
     combined_data.sort(key=lambda x: int(x['id']), reverse=True)
-
-    # 2. Read existing content
     existing_content = ""
     if os.path.exists(FILE_NAME):
         with open(FILE_NAME, "r", encoding="utf-8") as f:
             existing_content = f.read()
 
-    # 3. Filter for truly new tweets only
-    new_entries_html = ""
+    new_entries_text = ""
     new_count = 0
     for tweet in combined_data:
         if tweet['id'] not in existing_content:
             entry = f"### {tweet['date']}\n{tweet['text']}\n\n"
             entry += f"*[Link]({tweet['link']})*\n\n---\n\n"
-            new_entries_html += entry
+            new_entries_text += entry
             new_count += 1
 
     if new_count == 0:
-        print("😴 No new unique items to add.")
+        print("😴 No new items found.")
         return True
 
-    # 4. Reconstruct file: Header + New Tweets + Old Content (minus its old header)
-    clean_old_content = existing_content.replace(HEADER, "")
-    
+    clean_old = existing_content.replace(HEADER, "")
     with open(FILE_NAME, "w", encoding="utf-8") as f:
-        f.write(HEADER)
-        f.write(new_entries_html)
-        f.write(clean_old_content)
+        f.write(HEADER + new_entries_text + clean_old)
     
-    print(f"🚀 Success: Added {new_count} new items to the top of the file.")
+    print(f"🚀 Success: Added {new_count} items to top.")
     return True
 
 if __name__ == "__main__":
-    # Get data from both sources
-    api_posts = get_tweets_tweepy()
-    web_posts = get_tweets_selenium()
+    api = get_tweets_tweepy()
+    web = get_tweets_selenium()
     
-    # Merge lists (using dictionary to ensure ID uniqueness)
-    merged_map = {t['id']: t for t in (web_posts + api_posts)}
-    final_data = list(merged_map.values())
+    merged = {t['id']: t for t in (web + api)}
+    final = list(merged.values())
     
-    if not final_data:
-        print("❌ Both API and Selenium failed to find data.")
+    if not final:
+        print("❌ All methods failed. X is blocking automation.")
         sys.exit(1)
         
-    update_markdown(final_data)
+    update_markdown(final)
