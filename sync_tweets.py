@@ -37,8 +37,10 @@ def get_uc_driver():
     stealth(driver, languages=["en-US", "en"], vendor="Google Inc.", platform="MacIntel", webgl_vendor="Intel Inc.", renderer="Intel Iris OpenGL Engine", fix_hairline=True)
     return driver
 
+# --- SCRAPING METHODS ---
+
 def get_tweets_tweepy():
-    print("🛰️ API fetch...")
+    print("🛰️ Method 1: API fetch...")
     if not BEARER_TOKEN: return []
     client = tweepy.Client(bearer_token=BEARER_TOKEN)
     try:
@@ -50,14 +52,16 @@ def get_tweets_tweepy():
     return []
 
 def get_tweets_wayback():
-    print("🏛️ Wayback Deep Scrape...")
+    print("🏛️ Method 2: Wayback Deep Scrape...")
     data = []
     try:
         cdx = f"http://web.archive.org/cdx/search/cdx?url=x.com/{USERNAME}/status/&matchType=prefix&output=json&limit=5&filter=statuscode:200"
         res = requests.get(cdx, timeout=15).json()
         for r in res[1:]:
             ts, orig_url = r[1], r[2]
-            tid = re.search(r'status/(\d+)', orig_url).group(1)
+            match = re.search(r'status/(\d+)', orig_url)
+            if not match: continue
+            tid = match.group(1)
             page = requests.get(f"https://web.archive.org/web/{ts}/{orig_url}", timeout=10)
             soup = BeautifulSoup(page.text, 'lxml')
             text_el = soup.find("div", {"data-testid": "tweetText"}) or soup.find("p", class_="tweet-text")
@@ -68,7 +72,7 @@ def get_tweets_wayback():
     return data
 
 def get_tweets_ntscraper():
-    print("🕵️ NTScraper...")
+    print("🕵️ Method 3: NTScraper...")
     try:
         scraper = Nitter()
         results = scraper.get_tweets(USERNAME, mode='user', number=10)
@@ -76,7 +80,7 @@ def get_tweets_ntscraper():
     except: return []
 
 def get_tweets_from_google():
-    print("🔍 Google Scrape...")
+    print("🔍 Method 4: Google Scrape...")
     driver = get_uc_driver()
     data = []
     try:
@@ -88,7 +92,9 @@ def get_tweets_from_google():
         for card in cards:
             try:
                 link = card.find_element(By.XPATH, './/a[contains(@href, "status/")]').get_attribute("href")
-                tid = re.search(r'status/(\d+)', link).group(1)
+                match = re.search(r'status/(\d+)', link)
+                if not match: continue
+                tid = match.group(1)
                 text = card.find_element(By.CLASS_NAME, 'xcQxib').text
                 ts = int(card.find_element(By.CSS_SELECTOR, '[data-ts]').get_attribute("data-ts"))
                 data.append({"id": tid, "text": text, "date": datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M"), "link": f"https://x.com/{USERNAME}/status/{tid}"})
@@ -98,17 +104,30 @@ def get_tweets_from_google():
     return data
 
 def get_tweets_rss():
-    print("📻 RSS Feeds...")
+    print("📻 Method 5: RSS Feeds...")
     for inst in NITTER_INSTANCES:
         try:
             feed = feedparser.parse(f"{inst}/{USERNAME}/rss")
             if feed.entries:
-                return [{"id": re.search(r'status/(\d+)', e.link).group(1), "text": e.title, "date": datetime.fromtimestamp(time.mktime(e.published_parsed)).strftime("%Y-%m-%d %H:%M"), "link": f"https://x.com/{USERNAME}/status/{re.search(r'status/(\d+)', e.link).group(1)}"} for e in feed.entries]
+                results = []
+                for e in feed.entries:
+                    match = re.search(r'status/(\d+)', e.link)
+                    if match:
+                        tid = match.group(1)
+                        # Avoid placing regex inside the f-string to prevent SyntaxError
+                        dt = datetime.fromtimestamp(time.mktime(e.published_parsed)).strftime("%Y-%m-%d %H:%M")
+                        results.append({
+                            "id": tid, 
+                            "text": e.title, 
+                            "date": dt, 
+                            "link": f"https://x.com/{USERNAME}/status/{tid}"
+                        })
+                return results
         except: continue
     return []
 
 def get_tweets_bing():
-    print("🔎 Bing Scrape...")
+    print("🔎 Method 6: Bing Scrape...")
     driver = get_uc_driver()
     data = []
     try:
@@ -128,60 +147,46 @@ def get_tweets_bing():
 # --- FILE PROCESSING ---
 
 def parse_existing_markdown():
-    """Parses the .md file and returns a list of tweet dictionaries."""
     tweets = []
     if not os.path.exists(FILE_NAME): return tweets
-    
     with open(FILE_NAME, "r", encoding="utf-8") as f:
         content = f.read()
-    
-    # Split by the separator
     sections = content.split("---\n\n")
     for section in sections:
         try:
-            # Regex to find parts of the post
             date_match = re.search(r'### (.*?)\n', section)
             link_match = re.search(r'\*\[Link\]\((.*?status/(\d+).*?)\)\*', section)
-            
             if date_match and link_match:
-                # Find text: everything between the date header and the link
                 text_start = date_match.end()
                 text_end = link_match.start()
                 text = section[text_start:text_end].strip()
-                
-                tweets.append({
-                    "id": link_match.group(2),
-                    "text": text,
-                    "date": date_match.group(1),
-                    "link": link_match.group(1)
-                })
+                tweets.append({"id": link_match.group(2), "text": text, "date": date_match.group(1), "link": link_match.group(1)})
         except: continue
     return tweets
 
 def sync():
-    # 1. Pull from all sources
+    # 1. Scrape
     new_data = get_tweets_tweepy() + get_tweets_wayback() + get_tweets_ntscraper() + \
                get_tweets_from_google() + get_tweets_rss() + get_tweets_bing()
     
-    # 2. Pull existing from file
+    # 2. Parse current file
     existing_data = parse_existing_markdown()
     
-    # 3. Merge and Deduplicate (Keyed by ID)
+    # 3. Combine and Dedup
     master_dict = {t['id']: t for t in (existing_data + new_data) if t.get('id')}
     
-    # 4. Sort Globally (Snowflake ID descending = Latest First)
+    # 4. Global Chronological Sort (Snowflake ID descending = Latest First)
     all_sorted = sorted(master_dict.values(), key=lambda x: int(x['id']), reverse=True)
     
-    # 5. Build File Content
+    # 5. Generate Markdown
     output = HEADER
     for t in all_sorted:
         output += f"### {t['date']}\n{t['text']}\n\n*[Link]({t['link']})*\n\n---\n\n"
     
-    # 6. Atomic Write
     with open(FILE_NAME, "w", encoding="utf-8") as f:
         f.write(output)
     
-    print(f"✅ Sync Complete. Total Archive Size: {len(all_sorted)} posts.")
+    print(f"✅ Sync Complete. Total: {len(all_sorted)} posts.")
 
 if __name__ == "__main__":
     sync()
