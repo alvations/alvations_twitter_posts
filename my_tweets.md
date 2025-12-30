@@ -1,12 +1,5 @@
 # My Daily X Archive (Latest First)
 
-### Wayback Snapshot
-[Recovered from Internet Archive]
-
-*[Link](https://x.com/alvations/status/1829235578589606314)*
-
----
-
 ### 2025-12-30 06:00
 @github @GoogleAIStudio It works!! https://t.co/jBKQmDwQkN
 
