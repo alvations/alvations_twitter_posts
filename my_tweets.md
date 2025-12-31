@@ -1,5 +1,21 @@
 # My Daily X Archive (Latest First)
 
+### 2025-12-30 15:58
+At least DM is working again… and I’ve a daily sync of my posts to @github 
+
+but still this is not working… https://t.co/iGRVHPcvVv
+
+*[Link](https://x.com/alvations/status/2006032235908997489)*
+
+---
+
+### 2025-12-30 14:38
+@premium and away, we go… https://t.co/59d4tRZzRa
+
+*[Link](https://x.com/alvations/status/2006011934592672022)*
+
+---
+
 ### 2025-12-30 06:00
 @github @GoogleAIStudio It works!! https://t.co/jBKQmDwQkN
 
