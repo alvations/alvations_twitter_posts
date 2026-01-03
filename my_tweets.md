@@ -1,5 +1,31 @@
 # My Daily X Archive (Latest First)
 
+### 2026-01-02 19:29
+@fchollet Echo this 3000 times! 
+
+Plus put on Zelda and everytime my kid asks for help, I’ll keep repeating “Read what the Zonai is telling you, everything is a puzzle…”
+
+*[Link](https://x.com/alvations/status/2007172396365820232)*
+
+---
+
+### 2026-01-02 16:26
+@yoavgo Intelligent artifacts are better than artificial intelligence.
+
+*[Link](https://x.com/alvations/status/2007126327586107749)*
+
+---
+
+### 2026-01-02 13:47
+AWS have been an interesting tool that I was using to spawn instances to train @huggingface
+models. So I wrote something up. Hope this helps anyone figuring out how to using HF with @awscloud  Sagemaker =) #llm #nlproc 
+
+https://t.co/ZdTHFOPJJw
+
+*[Link](https://x.com/alvations/status/2007086397098971509)*
+
+---
+
 ### 2025-12-30 15:58
 At least DM is working again… and I’ve a daily sync of my posts to @github 
 
