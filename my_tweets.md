@@ -1,5 +1,65 @@
 # My Daily X Archive (Latest First)
 
+### 2026-01-04 14:01
+https://t.co/ptrin8TeG5
+
+*[Link](https://x.com/alvations/status/2007814604592951454)*
+
+---
+
+### 2026-01-04 13:42
+@GoogleColab Connect the models like legos bricks =) 
+
+- @fairseq NLLB and M2M models 
+- @Alibaba_Qwen 3 smallest model
+- @UnslothAI port of @GoogleAI Gemma 3
+- @_albertgu and @tri_dao mamba
+- @jhuclsp mmBERT
+
+Turn off/on LoRA as you please, and by all means just reset the weights too!
+
+*[Link](https://x.com/alvations/status/2007809977881395486)*
+
+---
+
+### 2026-01-04 13:37
+Here's the test runs https://t.co/S42gmEnqMa on @GoogleColab
+
+*[Link](https://x.com/alvations/status/2007808718352904415)*
+
+---
+
+### 2026-01-04 13:34
+Hmmm what should I do with this code 😉
+
+*[Link](https://x.com/alvations/status/2007807931840897318)*
+
+---
+
+### 2026-01-04 13:33
+Mark 3 should be stable code now!! #neuralempty #llm #nlproc
+
+An adaptation of the model initialization part of @BZhangGo T5Gemma that converts decoder-only models to encoder-decoder 
+
+@YiTayML UL2 feature for preprocessing data is missing though.
+
+https://t.co/Xq8sNjYiJg
+
+*[Link](https://x.com/alvations/status/2007807689993367926)*
+
+---
+
+### 2026-01-04 03:18
+Tired of seeing inference code but no training? @natolambert and folks did a great job with Olmo 3.
+
+https://t.co/FYdXo6rYLw
+
+It’s an fantastic #llm #nlproc read that inspired my new #neuralempty side project 😁
+
+*[Link](https://x.com/alvations/status/2007652759831736724)*
+
+---
+
 ### 2026-01-02 19:29
 @fchollet Echo this 3000 times! 
 
