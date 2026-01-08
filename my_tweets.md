@@ -1,5 +1,12 @@
 # My Daily X Archive (Latest First)
 
+### 2026-01-07 15:22
+@_reachsumit @zoeeeyooo Hmmm interesting, would be nice feature to have in @tomaarsen sentence transformers library 😁
+
+*[Link](https://x.com/alvations/status/2008922213265616917)*
+
+---
+
 ### 2026-01-04 14:01
 https://t.co/ptrin8TeG5
 
