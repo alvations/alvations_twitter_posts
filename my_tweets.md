@@ -1,5 +1,12 @@
 # My Daily X Archive (Latest First)
 
+### 2026-01-08 12:04
+I was reading something unrelated to #nlproc when I saw https://t.co/cwWMl5Cckw then strangely I thought of @kchonyc and causal inference and gated recurrence.
+
+*[Link](https://x.com/alvations/status/2009234762670743711)*
+
+---
+
 ### 2026-01-07 15:22
 @_reachsumit @zoeeeyooo Hmmm interesting, would be nice feature to have in @tomaarsen sentence transformers library 😁
 
