@@ -1,5 +1,64 @@
 # My Daily X Archive (Latest First)
 
+### 2026-01-09 23:32
+@GeminiApp The reverse is better but a model can do this, I'll be speechless...
+
+Source: Car-mageddon
+Reference: Auto-kalypse https://t.co/5beNlER8xq
+
+*[Link](https://x.com/alvations/status/2009770360644788667)*
+
+---
+
+### 2026-01-09 23:29
+@GeminiApp BTW, no #neuralempty / #llm model today can beat the actual reference translation for this from German -&gt; English
+
+Source: Farhzeug apocalypse
+Reference: Car-mageddon
+
+*[Link](https://x.com/alvations/status/2009769418406965287)*
+
+---
+
+### 2026-01-09 23:25
+Hmmmm, soooo when G-Translate is using @GeminiApp , you can do some magic =) 
+
+#neuralempty #nlproc #llm https://t.co/K99PPI4e4v
+
+*[Link](https://x.com/alvations/status/2009768635720433938)*
+
+---
+
+### 2026-01-09 20:33
+@tomaarsen https://t.co/rWhPorp7ex
+
+*[Link](https://x.com/alvations/status/2009725212477059095)*
+
+---
+
+### 2026-01-09 20:28
+@tomaarsen And if open models did disappear temporarily, "archeologist" will go dig them up and keep them alive https://t.co/8jwfKKFSuA =)
+
+*[Link](https://x.com/alvations/status/2009724095689069041)*
+
+---
+
+### 2026-01-09 18:49
+Quick question to all the TRL and *PO wizards. Has anyone tried resetting the weights of pretrained models and still able to properly RL the model? Any reference paper/code/blogs?
+
+#llm #reinforcementlearning #policy #nlproc #machinelearning
+
+*[Link](https://x.com/alvations/status/2009699135939850676)*
+
+---
+
+### 2026-01-09 18:45
+@percyliang @stanfordnlp Hint: We’ll be even more surprised about movie / tv subtitles and completion.
+
+*[Link](https://x.com/alvations/status/2009698091801477340)*
+
+---
+
 ### 2026-01-08 12:04
 I was reading something unrelated to #nlproc when I saw https://t.co/cwWMl5Cckw then strangely I thought of @kchonyc and causal inference and gated recurrence.
 
