@@ -1,5 +1,117 @@
 # My Daily X Archive (Latest First)
 
+### 2026-02-03 22:27
+This is an issue but also an opportunity https://t.co/skh56rFiIJ #nlposs #oss #OpenSource
+
+*[Link](https://x.com/alvations/status/2018813646160499167)*
+
+---
+
+### 2026-02-02 15:26
+@_m0se_ Why not https://t.co/iyW6owjr2v ?
+
+*[Link](https://x.com/alvations/status/2018345238834671662)*
+
+---
+
+### 2026-02-02 14:58
+First Q in my mind: Why are they all conversing in English?
+
+Next Q: Why haven’t they created their own cipher language?
+
+Last Q: Why haven’t any of the hacked the forum and start controlling it and start their own polymarket?
+
+*[Link](https://x.com/alvations/status/2018338303813050400)*
+
+---
+
+### 2026-01-31 03:20
+It's happening https://t.co/1zuLCiLk8Z https://t.co/SyDAvlzYju
+
+*[Link](https://x.com/alvations/status/2017437700861665300)*
+
+---
+
+### 2026-01-31 02:29
+And then I start questioning myself, hmmm, maybe "AI" knows more than I think it knows... https://t.co/g08yDTeBLX
+
+*[Link](https://x.com/alvations/status/2017425036160733365)*
+
+---
+
+### 2026-01-31 02:02
+This is something that #neuralempty or #llm won't really understand, even if it understands the 365 part. Understanding the "windows" would be beyond markovian next token knowledge. https://t.co/v7V7REjeei
+
+*[Link](https://x.com/alvations/status/2017418206781083903)*
+
+---
+
+### 2026-01-22 02:22
+@julien_c Have you already made it control reachy to wobble when Claude is “thinking”?
+
+*[Link](https://x.com/alvations/status/2014161789546623220)*
+
+---
+
+### 2026-01-22 02:19
+RT @YasminMoslem: 🎉 Join the new Cross-Lingual #VoiceCloning Shared Task at #IWSLT2026. This task addresses one of the challenging areas in…
+
+*[Link](https://x.com/alvations/status/2014160839725469950)*
+
+---
+
+### 2026-01-22 02:18
+@YasminMoslem @shashwatup9k @alihatami84 I remember saying what sounds like sci-fi in 2009 ACL that we should be able to auto-tune any TTS outputs to suit the user voice and I got the “this crazy fella” look 😁
+
+*[Link](https://x.com/alvations/status/2014160777125466527)*
+
+---
+
+### 2026-01-22 02:16
+@YasminMoslem @prajdabre @AlhamFikri @Chenyang_Lyu @wangly0229 @InacioVieira @WuMinghao_nlp @kalyan_kpl @VicentBriva Thanks for tagging! Yes I’m aware of the awesome work that you and IWSLT folks are doing. And that paper from Yvette is really something that anyone doing speech #neuralempty should read.
+
+Welcome to the new world of multi-modal MT evals!! #nlproc #llm
+
+*[Link](https://x.com/alvations/status/2014160270021587265)*
+
+---
+
+### 2026-01-15 12:40
+#neuralempty is back en vogue? https://t.co/P8odlZOORP
+
+Now can we have GPT-OSS translate to replace NLLB on @huggingface ?
+
+#nlproc #nlposs #llm
+
+*[Link](https://x.com/alvations/status/2011780509500596494)*
+
+---
+
+### 2026-01-13 15:59
+FNAC (feature not a company) is when a startup needs to pivot, they've found a problem, they're solving it. Now finding the market fit is the real business. 
+
+Open sourcing is a way to make the moat become a lazy pool to draw people to start float around it. Now attract them into https://t.co/QipIaE3aKu
+
+*[Link](https://x.com/alvations/status/2011105891714490579)*
+
+---
+
+### 2026-01-12 14:07
+Exactly solving a problem haunting me for a week!!!  #llm #nlproc https://t.co/0sveFiaaKK
+
+*[Link](https://x.com/alvations/status/2010715289483104367)*
+
+---
+
+### 2026-01-10 04:20
+If you're an @IKEAUSA fan and an  #llm / #nlproc researcher and hasn't already follow https://t.co/FXnLDy0lrv , you're missing out big time =) 
+
+Latest post has a #neuralempty related article.  #swedishmeatballs
+
+*[Link](https://x.com/alvations/status/2009842840101130717)*
+
+---
+
 ### 2026-01-09 23:32
 @GeminiApp The reverse is better but a model can do this, I'll be speechless...
 
